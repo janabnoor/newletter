@@ -1,0 +1,267 @@
+/* ═══════════════════════════════════════════════════════════════
+   style.css  –  Premium Digital Flipbook v4
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ── Reset ─────────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg:        #111114;
+  --glass:     rgba(255,255,255,0.07);
+  --glass-hi:  rgba(255,255,255,0.14);
+  --border:    rgba(255,255,255,0.10);
+  --accent:    #5b8cff;
+  --warm:      #ffaa6c;
+  --text:      #e9e9f2;
+  --muted:     rgba(233,233,242,0.50);
+  --bar-h:     54px;
+  --dur:       0.22s;
+  --ease:      cubic-bezier(0.4,0,0.2,1);
+}
+
+html, body {
+  width: 100%; height: 100%; overflow: hidden;
+  background: var(--bg);
+  color: var(--text);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  touch-action: none;
+  user-select: none; -webkit-user-select: none;
+}
+
+.hidden { display: none !important; }
+
+/* ─────────────────────────────────────────────────────────────────
+   LOADING SCREEN
+───────────────────────────────────────────────────────────────── */
+#loading-screen {
+  position: fixed; inset: 0; z-index: 1000;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--bg);
+}
+
+.loader-card {
+  background: var(--glass);
+  backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
+  border: 1px solid var(--border);
+  border-radius: 24px; padding: 44px 48px;
+  text-align: center; max-width: 360px; width: 92%;
+  box-shadow: 0 12px 48px rgba(0,0,0,0.60);
+}
+
+/* animated stack */
+.loader-icon { height: 60px; display: flex; align-items: flex-end; justify-content: center; margin-bottom: 24px; }
+.page-stack  { position: relative; width: 44px; height: 54px; }
+.ps-page     { position: absolute; bottom: 0; width: 36px; height: 48px; border-radius: 4px; border: 1.5px solid rgba(255,255,255,0.18); }
+.ps-p1 { background: rgba(91,140,255,0.18); left:0;   animation: bob 1.5s 0.00s ease-in-out infinite; }
+.ps-p2 { background: rgba(91,140,255,0.32); left:4px; animation: bob 1.5s 0.15s ease-in-out infinite; }
+.ps-p3 { background: rgba(91,140,255,0.54); left:8px; animation: bob 1.5s 0.30s ease-in-out infinite; }
+@keyframes bob { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-9px)} }
+
+.loader-title  { font-size: 20px; font-weight: 600; margin-bottom: 8px; letter-spacing:-.3px; }
+.loader-status { font-size: 13px; color: var(--muted); margin-bottom: 22px; min-height: 18px; }
+
+.progress-bar-track { background: rgba(255,255,255,0.08); border-radius: 999px; height: 6px; overflow: hidden; margin-bottom: 10px; }
+.progress-bar-fill  { height:100%; width:0%; background: linear-gradient(90deg,var(--accent),var(--warm)); border-radius: 999px; transition: width .28s ease; }
+.progress-label { font-size: 12px; color: var(--muted); }
+
+/* ─────────────────────────────────────────────────────────────────
+   ERROR SCREEN
+───────────────────────────────────────────────────────────────── */
+#error-screen {
+  position: fixed; inset: 0; z-index: 999;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--bg);
+}
+.error-card {
+  background: var(--glass);
+  backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(255,90,90,0.22);
+  border-radius: 24px; padding: 44px 48px;
+  text-align: center; max-width: 380px; width: 92%;
+}
+.error-icon { font-size: 48px; margin-bottom: 16px; }
+.error-card h2 { font-size: 22px; font-weight: 600; margin-bottom: 12px; }
+.error-card p  { font-size: 14px; color: var(--muted); line-height: 1.65; margin-bottom: 24px; }
+.error-card code { background: rgba(255,255,255,0.08); padding: 2px 6px; border-radius: 4px; font-size: 12px; }
+.error-card button { background: var(--accent); color:#fff; border:none; border-radius:10px; padding:12px 28px; font-size:15px; font-weight:600; cursor:pointer; transition:opacity var(--dur); }
+.error-card button:hover { opacity:.85; }
+
+/* ─────────────────────────────────────────────────────────────────
+   STAGE
+───────────────────────────────────────────────────────────────── */
+#flipbook-stage {
+  position: fixed; inset: 0;
+  display: flex; flex-direction: column;
+  background: var(--bg);
+}
+
+/* ── Bars ─────────────────────────────────────────────────────── */
+.ui-bar {
+  flex: 0 0 auto; height: var(--bar-h);
+  display: flex; align-items: center;
+  padding: 0 14px; gap: 8px;
+  background: rgba(14,14,18,0.80);
+  backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border);
+  z-index: 60; position: relative;
+  transition: opacity var(--dur) var(--ease), transform var(--dur) var(--ease);
+}
+#bottom-bar { border-bottom: none; border-top: 1px solid var(--border); }
+
+.ui-bar.ui-hidden { opacity: 0; pointer-events: none; }
+#top-bar.ui-hidden    { transform: translateY(-100%); }
+#bottom-bar.ui-hidden { transform: translateY(100%); }
+
+.bar-title   { flex:1; font-size:15px; font-weight:600; letter-spacing:-.2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.bar-counter { font-size:13px; color:var(--muted); white-space:nowrap; }
+
+.ctrl-btn {
+  background: var(--glass-hi); border: 1px solid var(--border); color: var(--text);
+  border-radius: 9px; width: 38px; height: 38px; font-size: 16px;
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  flex: 0 0 auto;
+  transition: background var(--dur), transform var(--dur);
+  /* Critical: make sure bottom-bar buttons work on mobile */
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+.ctrl-btn:hover  { background: rgba(255,255,255,0.20); }
+.ctrl-btn:active { transform: scale(0.90); }
+.ctrl-btn:disabled { opacity: .30; cursor: default; pointer-events: none; }
+
+.page-jump-wrap { display:flex; align-items:center; gap:6px; flex:1; justify-content:center; }
+#page-jump-input {
+  background: var(--glass-hi); border: 1px solid var(--border); color: var(--text);
+  border-radius: 8px; padding: 6px 8px; width: 52px; text-align: center; font-size: 14px;
+  -moz-appearance: textfield; touch-action: manipulation;
+}
+#page-jump-input::-webkit-outer-spin-button,
+#page-jump-input::-webkit-inner-spin-button { -webkit-appearance: none; }
+#page-jump-input:focus { outline: 2px solid var(--accent); }
+#page-jump-total { font-size: 13px; color: var(--muted); white-space: nowrap; }
+#page-jump-go {
+  background: var(--accent); border: none; color: #fff;
+  border-radius: 8px; width: 32px; height: 32px; font-size: 16px;
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  transition: opacity var(--dur); touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+#page-jump-go:hover { opacity:.85; }
+
+/* ── Viewport ─────────────────────────────────────────────────── */
+#flipbook-viewport {
+  flex: 1 1 auto;
+  display: flex; align-items: center; justify-content: center;
+  overflow: hidden; position: relative;
+}
+
+/* ── Page container ───────────────────────────────────────────── */
+#flipbook-container {
+  position: relative;
+  touch-action: none;
+  /* rich drop-shadow gives the "floating book" depth */
+  box-shadow:
+    0 4px 12px  rgba(0,0,0,0.40),
+    0 16px 48px rgba(0,0,0,0.55),
+    0 32px 80px rgba(0,0,0,0.30);
+  border-radius: 2px;
+}
+
+/* ── Individual pages ─────────────────────────────────────────── */
+.fb-page {
+  position: absolute; top:0; left:0; width:100%; height:100%;
+  background: #fff; border-radius: 2px; overflow: hidden;
+}
+.fb-page canvas { display:block; width:100%; height:100%; }
+
+/* ═══════════════════════════════════════════════════════════════
+   EDGE ARROW BUTTONS
+   •  position:absolute inside #flipbook-container
+   •  z-index: 50 — above the overlay canvas (z:20)
+   •  Half-outside the page edges so they're clearly visible
+   •  touch-action:manipulation removes the 300ms tap delay
+═══════════════════════════════════════════════════════════════ */
+.fb-arrow {
+  position: absolute;
+  top: 50%; transform: translateY(-50%);
+
+  /* Size */
+  width:  54px;
+  height: 54px;
+  border-radius: 50%;
+
+  /* Fully transparent — only a faint ring and icon are visible
+     so page content remains readable through the button */
+  background: transparent;
+  border: 1.5px solid rgba(255,255,255,0.28);
+  color: rgba(255,255,255,0.70);
+  font-size: 20px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.18);
+
+  /* Layout */
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  z-index: 50;
+
+  /* Mobile: remove tap delay + highlight */
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+
+  /* Smooth transitions — only opacity and scale, never fill */
+  transition: opacity var(--dur), transform var(--dur) var(--ease),
+              border-color var(--dur), color var(--dur);
+}
+
+/* Hover: stay transparent, just brighten the ring and icon */
+.fb-arrow:hover {
+  background: transparent;
+  border-color: rgba(255,255,255,0.70);
+  color: rgba(255,255,255,1);
+  transform: translateY(-50%) scale(1.10);
+  box-shadow: 0 0 0 3px rgba(255,255,255,0.10);
+}
+
+.fb-arrow:active {
+  transform: translateY(-50%) scale(0.92);
+  opacity: .75;
+}
+
+/* Left arrow: peek out from the left edge */
+.fb-arrow-left  { left:  -27px; }
+
+/* Right arrow: peek out from the right edge */
+.fb-arrow-right { right: -27px; }
+
+/* ── Tap zones (wide invisible hit areas for swipe on mobile) ─── */
+/* These sit BELOW arrows (z:5) so they never block arrow taps */
+.tap-zone {
+  position: absolute; top: 0; bottom: 0; width: 72px; z-index: 5;
+}
+#tap-left  { left:  0; }
+#tap-right { right: 0; }
+
+/* ─────────────────────────────────────────────────────────────────
+   RESPONSIVE
+───────────────────────────────────────────────────────────────── */
+@media (max-width: 480px) {
+  :root { --bar-h: 48px; }
+  .ctrl-btn  { width: 34px; height: 34px; font-size: 14px; }
+  .fb-arrow  { width: 46px; height: 46px; font-size: 18px; }
+  .fb-arrow-left  { left:  -23px; }
+  .fb-arrow-right { right: -23px; }
+  .loader-card, .error-card { padding: 30px 22px; }
+}
+
+@media (max-width: 360px) {
+  .page-jump-wrap { display: none; }
+}
+
+@media (max-height: 500px) {
+  :root { --bar-h: 44px; }
+}
+
+/* ── Reduced motion ─────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  .fb-arrow { transition: none; }
+}
