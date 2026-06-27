@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="theme-color" content="#0f0f12" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <title>Digital Flipbook</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+  <!-- ═══════════════════════════════════════════
+       LOADING SCREEN
+  ═══════════════════════════════════════════ -->
+  <div id="loading-screen">
+    <div class="loader-card">
+      <div class="loader-icon">
+        <div class="page-stack">
+          <div class="ps-page ps-p1"></div>
+          <div class="ps-page ps-p2"></div>
+          <div class="ps-page ps-p3"></div>
+        </div>
+      </div>
+      <h2 class="loader-title">Loading Newsletter</h2>
+      <p class="loader-status" id="loader-status">Initialising PDF engine…</p>
+      <div class="progress-bar-track">
+        <div class="progress-bar-fill" id="progress-bar"></div>
+      </div>
+      <p class="progress-label" id="progress-label">0%</p>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════
+       ERROR SCREEN
+  ═══════════════════════════════════════════ -->
+  <div id="error-screen" class="hidden">
+    <div class="error-card">
+      <div class="error-icon">⚠</div>
+      <h2>Failed to Load</h2>
+      <p id="error-message">The PDF could not be loaded. Please check that <code>./pdf/newsletter.pdf</code> exists on the server.</p>
+      <button onclick="location.reload()">Retry</button>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════
+       FLIPBOOK STAGE
+  ═══════════════════════════════════════════ -->
+  <div id="flipbook-stage" class="hidden">
+
+    <!-- Top bar -->
+    <div id="top-bar" class="ui-bar">
+      <span id="book-title" class="bar-title">Newsletter</span>
+      <span id="page-counter" class="bar-counter">1 / 1</span>
+    </div>
+
+    <!-- Flipbook container -->
+    <div id="flipbook-viewport">
+      <div id="flipbook-container">
+        <!-- Pages injected dynamically -->
+      </div>
+    </div>
+
+    <!-- Left / Right tap zones -->
+    <div id="tap-left"  class="tap-zone"></div>
+    <div id="tap-right" class="tap-zone"></div>
+
+    <!-- Bottom controls -->
+    <div id="bottom-bar" class="ui-bar">
+      <button class="ctrl-btn" id="btn-first"  title="First page">&#8676;</button>
+      <button class="ctrl-btn" id="btn-prev"   title="Previous">&#8592;</button>
+
+      <div class="page-jump-wrap">
+        <input type="number" id="page-jump-input" min="1" value="1" />
+        <span id="page-jump-total">/ 1</span>
+        <button id="page-jump-go" title="Go">&#8594;</button>
+      </div>
+
+      <button class="ctrl-btn" id="btn-next"   title="Next">&#8594;</button>
+      <button class="ctrl-btn" id="btn-last"   title="Last page">&#8677;</button>
+    </div>
+
+  </div>
+
+  <!-- ═══════════════════════════════════════════
+       AUDIO
+  ═══════════════════════════════════════════ -->
+  <audio id="flip-sound" preload="auto">
+    <source src="assets/pageflip.mp3" type="audio/mpeg" />
+  </audio>
+
+  <!-- ═══════════════════════════════════════════
+       SCRIPTS  (order matters)
+  ═══════════════════════════════════════════ -->
+  <script src="libraries/pdf.min.js"></script>
+  <script src="js/pdf-loader.js"></script>
+  <script src="js/flipbook.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
